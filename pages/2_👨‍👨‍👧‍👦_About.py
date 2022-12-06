@@ -19,8 +19,6 @@ with col2:
 with col3:
     st.header("Benjamin Mok")
     st.image("img/mok_picture.png")
-    st.header("Mr. Due Tomorrow = Do Tomorrow")
-    st.header("jk luv you bro :)")
     st.header('ML Engineer')
 
 with col4:
