@@ -4,7 +4,6 @@ To run:
 
 ``` shell
 pip install -r requirements.txt
-python -m nltk.downloader punkt
-streamlit run main.py
+streamlit run 📈_Housing_Trend_Predictor.py.py
 ```
 
