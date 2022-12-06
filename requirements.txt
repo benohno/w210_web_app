@@ -79,6 +79,7 @@ smmap==5.0.0
 stack-data==0.6.2
 streamlit==1.15.2
 streamlit-aggrid==0.3.3
+streamlit-lottie==0.0.3
 toml==0.10.2
 tomli==2.0.1
 toolz==0.12.0
@@ -92,3 +93,4 @@ urllib3==1.26.13
 validators==0.20.0
 wcwidth==0.2.5
 zipp==3.11.0
+
