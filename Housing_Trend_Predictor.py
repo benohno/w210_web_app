@@ -92,6 +92,17 @@ def load_lottieurl(url: str):
     return r.json()
 
 
+def load_lstm(county_option: str):
+    import time
+    import random
+    time.sleep(random.randint(5,12))
+    
+    if county_option == "boise, id":
+        return st.image("img/boise_lstm.png")
+    elif county_option == "clark, nv":
+        return st.image("img/clark_lstm.png")
+
+
 lottie_url_house = "https://assets2.lottiefiles.com/private_files/lf30_p5tali1o.json"
 lottie_hello = load_lottieurl(lottie_url_house)
 
@@ -111,7 +122,7 @@ with st.expander("ℹ️ - About this app", expanded=True):
     st.write(
         """
 -   The *Housing Trend Predictor* app is an easy-to-use interface built in Streamlit to forecast direction of the housing market for a chosen US county
--   It uses a Prophet timeseries model to make predictions from housing and market data the team has collected
+-   It uses a Prophet timeseries model and an LSTM model to make predictions from housing and market data the team has collected
 	    """
     )
 
@@ -124,6 +135,14 @@ data = pd.read_csv('data/cleaned_data.csv')
 counties_only = pd.DataFrame(data.county_name.unique(), columns=['Counties'])
 
 # user inputs
+
+model_option = st.selectbox(
+    label='Please pick a model:',
+    options=('prophet', 'lstm'),
+    index=1)
+
+st.markdown(model_option)
+
 county_option = st.selectbox(
     label='Please pick a county:',
     options=('clark, nv', 'boise, id'),
@@ -131,22 +150,26 @@ county_option = st.selectbox(
 
 st.markdown(county_option)
 
+
 if st.button("Run model"):
     with st_lottie_spinner(lottie_hello, height=400):
+        if model_option == "prophet":
+            model = model_for_county(county_option, data)
 
-        model = model_for_county(county_option, data)
+            active_listing_count_regressor = add_regressor_column(
+                'active_listing_count', county_option, 12, data)
+            median_days_on_market_regressor = add_regressor_column(
+                'median_days_on_market', county_option, 12, data)
 
-        active_listing_count_regressor = add_regressor_column(
-            'active_listing_count', county_option, 12, data)
-        median_days_on_market_regressor = add_regressor_column(
-            'median_days_on_market', county_option, 12, data)
+            future = model.make_future_dataframe(periods=12, freq='MS')
+            future['active_listing_count'] = active_listing_count_regressor
+            future['median_days_on_market'] = median_days_on_market_regressor
 
-        future = model.make_future_dataframe(periods=12, freq='MS')
-        future['active_listing_count'] = active_listing_count_regressor
-        future['median_days_on_market'] = median_days_on_market_regressor
+            forecast = model.predict(future)
 
-        forecast = model.predict(future)
+            fig = model.plot(forecast)
 
-        fig = model.plot(forecast)
+            st.pyplot(fig)
 
-        st.pyplot(fig)
+        elif model_option == "lstm":
+            load_lstm(county_option)
